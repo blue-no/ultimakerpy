@@ -30,6 +30,7 @@ class _Printer:
 
         request_timeout = config.get('request_timeout', 30)
         self.timer_timeout = config.get('timer_timeout', 600)
+        self.update_interval = config.get('update_interval', 1.0)
         self.logging_interval = config.get('logging_interval', 1.0)
 
         self._client = UMClient(timeout=request_timeout, username=username,
@@ -48,6 +49,7 @@ class _Printer:
             ) -> Iterator['DataLogger']:
         try:
             dl = DataLogger(self._client, filepath,
+                            update_interval=self.update_interval,
                             logging_interval=self.logging_interval,
                             timer_timeout=self.timer_timeout)
             dl.register(target_funcs)

@@ -1,6 +1,11 @@
 # UltimakerPy
 Python program to easily operate Ultimaker 3D printers with commands. Successor library to "umapi".
 
+## Install
+```
+pip install git+https://github.com/blue-no/ultimakerpy.git
+```
+
 ## Setup
 1. Connect the printer to the local network and fix the IP address.
 2. On a PC connected to the same network, access `http://{IP address}` to open the SwaggerUI and perform the authentication process and obtain a username and password.
@@ -12,6 +17,7 @@ Python program to easily operate Ultimaker 3D printers with commands. Successor 
         username: xxxxxxxxxxx
         password: xxxxxxxxxxx
 
+        update_interval: 1.0
         logging_interval: 1.0
         request_timeout: 3.0
         timer_timeout: 300
