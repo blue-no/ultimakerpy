@@ -13,16 +13,18 @@ class DataLogger:
 
     def __init__(
             self, client: 'UMClient', output_csv: str,
-            logging_interval: float = 1.0, timer_timeout: float = 600.) -> None:
-        self.funcs = {'timestamp': lambda: datetime.now().timestamp()}
+            update_interval: float = 1.0, logging_interval: float = 1.0,
+            timer_timeout: float = 600.) -> None:
         self._client = client
         self.output_csv = output_csv
+        self.update_interval = update_interval
         self.logging_interval = logging_interval
         self._callbacks = []
         self.__valdict = None
-        self.__thread = None
+        self.__thread_upd = None
         self.__loop_alive = False
 
+        self.funcs = {'timestamp': lambda: datetime.now().timestamp()}
         self._timer = Timer(self, timeout=timer_timeout)
 
     def register(self, funcs: Callable[[], Any]) -> None:
@@ -44,20 +46,21 @@ class DataLogger:
             f = open(self.output_csv, 'a', newline='')
             self.__writer = csv.writer(f)
             self.__writer.writerow(self.funcs.keys())
-            self.add_callback(
-                lambda: self.__writer.writerow(self.__valdict.values()))
 
-            self.__thread = threading.Thread(target=self.update)
+            self.__thread_upd = threading.Thread(target=self._update_loop)
+            self.__thread_log = threading.Thread(target=self._logging_loop)
             self.__loop_alive = True
-            self.__thread.start()
+            self.__thread_upd.start()
+            self.__thread_log.start()
             yield
         finally:
             self.__loop_alive = False
-            self.__thread.join()
+            self.__thread_upd.join()
+            self.__thread_log.join()
             f.flush()
             f.close()
 
-    def update(self) -> None:
+    def _update_loop(self) -> None:
         def main():
             with self._client.batch_mode():
                 rets = [f() for f in self.funcs.values()]
@@ -80,10 +83,20 @@ class DataLogger:
             t1 = time.perf_counter()
             main()
             t2 = time.perf_counter()
+            time.sleep(max(0, self.update_interval-(t2-t1)))
+
+    def _logging_loop(self):
+        def main():
+            self.__writer.writerow(self.__valdict.values())
+
+        while self.__loop_alive:
+            t1 = time.perf_counter()
+            main()
+            t2 = time.perf_counter()
             time.sleep(max(0, self.logging_interval-(t2-t1)))
 
     def get_timer(self) -> 'Timer':
         return self._timer
 
-    def add_callback(self, func) -> None:
+    def add_callback(self, func: Callable) -> None:
         self._callbacks.append(func)
