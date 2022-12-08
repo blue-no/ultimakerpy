@@ -58,8 +58,8 @@ def test_s3_datalogger():
         'fan_spd': printer.fan.speed,
     }
     with printer.data_logger('test_s3_datalogger.csv', targets) as dl:
-        for i in range(3):
-            print(i)
+        dl.add_callback(lambda: print(time.perf_counter()))
+        for i in range(10):
             time.sleep(1.0)
 
 

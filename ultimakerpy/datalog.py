@@ -3,7 +3,7 @@ import threading
 import time
 from contextlib import contextmanager
 from datetime import datetime
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, List, Tuple
 
 from .client import FutureResult, UMClient
 from .timer import Timer
@@ -31,14 +31,14 @@ class DataLogger:
         self.funcs.update(funcs)
 
     def get(self, *names: str) -> Any:
-        valdict = self.get_all()
+        valdict = self.__valdict.copy()
         if len(names) > 1:
             return tuple(valdict[name] for name in names)
         return valdict[names[0]]
 
-    def get_all(self) -> Dict[str, Any]:
+    def get_all(self) -> Tuple[Any]:
         self._timer.wait_for(lambda: self.__valdict is not None)
-        return self.__valdict.copy()
+        return tuple(self.__valdict.copy().values())
 
     @contextmanager
     def loop(self) -> None:
@@ -87,7 +87,7 @@ class DataLogger:
 
     def _logging_loop(self):
         def main():
-            self.__writer.writerow(self.__valdict.values())
+            self.__writer.writerow(self.get_all())
 
         while self.__loop_alive:
             t1 = time.perf_counter()
