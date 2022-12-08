@@ -18,7 +18,7 @@ pip install git+https://github.com/blue-no/ultimakerpy.git
         password: xxxxxxxxxxx
 
         update_interval: 1.0
-        logging_interval: 1.0
+        logging_interval: 5.0
         request_timeout: 3.0
         timer_timeout: 300
     ```
