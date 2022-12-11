@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ultimakerpy"
+description = "Python Library for Ultimaker 3D Printers"
+readme = "README.md"
+authors = [{name = "Kota AONO", email = "k.pg.aono@gmail.com"}]
+license = {text = "Apache License 2.0"}
+requires-python = ">=3.6"
+dependencies = [
+    "aiohttp",
+    "requests",
+    "pyyaml",
+]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "ultimakerpy.__version__"}
