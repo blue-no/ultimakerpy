@@ -1,6 +1,7 @@
 __pycache__/
-.pytest_cache/
+pytest_cache/
 htmlcov/
+build/
 .coverage
 *.egg-info/
 *.ufp
