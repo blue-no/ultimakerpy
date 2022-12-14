@@ -102,7 +102,7 @@ class _RealtimeClient:
         except requests.JSONDecodeError:
             respj = ''
         if code > 400:
-            raise RequestError('status code {}: {}'.format(code, respj))
+            return None
         return respj
 
 
@@ -152,7 +152,7 @@ class _BatchClient:
         code = resp.status
         respj = await resp.json()
         if code > 400:
-            raise RequestError('status code {}: {}'.format(code, respj))
+            return None
         return respj
 
 
