@@ -31,6 +31,7 @@ class DataLogger:
         self.funcs.update(funcs)
 
     def get(self, *names: str) -> Any:
+        self._timer.wait_for(lambda: self.__valdict is not None)
         valdict = self.__valdict.copy()
         if len(names) > 1:
             return tuple(valdict[name] for name in names)
