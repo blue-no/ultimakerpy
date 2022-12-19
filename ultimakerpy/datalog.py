@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Tuple
 
+from .exceptions import FutureResultError
 from .client import FutureResult, UMClient
 from .timer import Timer
 
@@ -69,11 +70,14 @@ class DataLogger:
             valdict = {}
             for ret, name in zip(rets, self.funcs.keys()):
                 t = type(ret)
-                if t in (list, tuple):
-                    val = t((r.get() if type(r) == FutureResult else r \
-                             for r in ret))
-                else:
-                    val = ret.get() if t == FutureResult else ret
+                try:  # [TODO] printer.job_state()でFutureResultErrorが出る原因の調査と対処
+                    if t in (list, tuple):
+                        val = t((r.get() if type(r) == FutureResult else r \
+                                for r in ret))
+                    else:
+                        val = ret.get() if t == FutureResult else ret
+                except FutureResultError:
+                    val = None
                 valdict[name] = val
             self.__valdict = valdict
 
