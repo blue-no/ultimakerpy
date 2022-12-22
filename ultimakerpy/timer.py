@@ -1,5 +1,5 @@
 import time
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 if TYPE_CHECKING:
     from .datalog import DataLogger
@@ -7,7 +7,9 @@ if TYPE_CHECKING:
 
 class Timer:
 
-    def __init__(self, data_logger: 'DataLogger', timeout: float) -> None:
+    def __init__(
+            self, data_logger: 'DataLogger', timeout: Optional[float] = None
+            ) -> None:
         self._data_logger = data_logger
         self._timeout = timeout
 
@@ -19,5 +21,7 @@ class Timer:
         t1 = time.perf_counter()
         while not target():
             t2 = time.perf_counter()
+            if self._timeout is None:
+                continue
             if t2 - t1 > self._timeout:
                 raise TimeoutError(f'wait time exceeded {self._timeout} seconds')

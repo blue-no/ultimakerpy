@@ -28,10 +28,10 @@ class _Printer:
         username = config.get('username', None)
         password = config.get('password', None)
 
-        request_timeout = config.get('request_timeout', 30)
-        self.timer_timeout = config.get('timer_timeout', 600)
+        request_timeout = config.get('request_timeout', None)
+        self.timer_timeout = config.get('timer_timeout', None)
         self.update_interval = config.get('update_interval', 1.0)
-        self.logging_interval = config.get('logging_interval', 1.0)
+        self.logging_interval = config.get('logging_interval', 5.0)
 
         self._client = UMClient(timeout=request_timeout, username=username,
                                 password=password)

@@ -3,7 +3,7 @@ import threading
 import time
 from contextlib import contextmanager
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from .exceptions import FutureResultError
 from .client import FutureResult, UMClient
@@ -15,7 +15,7 @@ class DataLogger:
     def __init__(
             self, client: 'UMClient', output_csv: str,
             update_interval: float = 1.0, logging_interval: float = 1.0,
-            timer_timeout: float = 600.) -> None:
+            timer_timeout: Optional[float] = None) -> None:
         self._client = client
         self.output_csv = output_csv
         self.update_interval = update_interval
