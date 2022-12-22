@@ -46,11 +46,10 @@ class DataLogger:
     def loop(self) -> None:
         try:
             f = open(self.output_csv, 'a', newline='')
-            self.__writer = csv.writer(f)
-            self.__writer.writerow(self.funcs.keys())
-
-            self.__thread_upd = threading.Thread(target=self._update_loop)
-            self.__thread_log = threading.Thread(target=self._logging_loop)
+            self.__thread_upd = threading.Thread(
+                target=self._update_loop)
+            self.__thread_log = threading.Thread(
+                target=lambda: self._logging_loop(f))
             self.__loop_alive = True
             self.__thread_upd.start()
             self.__thread_log.start()
@@ -90,9 +89,13 @@ class DataLogger:
             t2 = time.perf_counter()
             time.sleep(max(0, self.update_interval-(t2-t1)))
 
-    def _logging_loop(self):
+    def _logging_loop(self, f):
+        writer = csv.writer(f)
+        writer.writerow(self.funcs.keys())
+
         def main():
-            self.__writer.writerow(self.get_all())
+            writer.writerow(self.get_all())
+            f.flush()
 
         while self.__loop_alive:
             t1 = time.perf_counter()
